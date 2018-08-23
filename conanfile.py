@@ -57,7 +57,7 @@ class LibVTKConan(ConanFile):
 
     def source(self):
         tools.get("https://github.com/Kitware/VTK/archive/v{0}.tar.gz".format(self.version))
-        os.rename("vtk-" + self.version, self.source_subfolder)
+        os.rename("VTK-" + self.version, self.source_subfolder)
 
     def build(self):
         vtk_source_dir = os.path.join(self.source_folder, self.source_subfolder)
