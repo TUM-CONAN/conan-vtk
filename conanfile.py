@@ -1,7 +1,7 @@
-from conans import ConanFile, tools, CMake, AutoToolsBuildEnvironment
+from conans import ConanFile, CMake, tools, AutoToolsBuildEnvironment
 from conans.util import files
 import os
-
+import shutil
 
 class LibVTKConan(ConanFile):
     name = "vtk"
@@ -10,12 +10,20 @@ class LibVTKConan(ConanFile):
     settings = "os", "arch", "compiler", "build_type"
     options = {"shared": [True, False]}
     default_options = "shared=True"
-    exports = ["patches/CMakeProjectWrapper.txt"]
+    exports = [
+        "patches/CMakeProjectWrapper.txt",
+        "patches/IO_Import_CMakeLists.diff",
+        "patches/optimization.diff",
+        "patches/CMakeLists_glew.diff",
+        "patches/QVTKOpenGLWidget.diff",
+        "patches/offscreen_size_windows.diff"
+    ]
     url = "https://gitlab.lan.local/conan/conan-vtk"
     license="http://www.vtk.org/licensing/"
     description = "Visualization Toolkit by Kitware"
     source_subfolder = "source_subfolder"
     build_subfolder = "build_subfolder"
+    short_paths = True
 
     def requirements(self):
         self.requires("qt/5.11.1@fw4spl/stable")
@@ -29,8 +37,8 @@ class LibVTKConan(ConanFile):
             self.requires("libtiff/4.0.9@fw4spl/stable")
             self.requires("zlib/1.2.11@fw4spl/stable")
 
-def system_requirements(self):
-        if os_info.linux_distro == "ubuntu":
+    def system_requirements(self):
+        if tools.os_info.linux_distro == "ubuntu":
             pack_names = [
                 "freeglut3-dev",
                 "mesa-common-dev",
@@ -43,18 +51,16 @@ def system_requirements(self):
                 "libxt-dev",
                 "libglu1-mesa-dev"
             ]
-            installer = SystemPackageTool()
+            installer = tools.SystemPackageTool()
             installer.update()
             installer.install(" ".join(pack_names))
 
     def source(self):
-        libpng_source_dir = os.path.join(self.source_folder, self.source_subfolder)
-        shutil.move("patches/CMakeProjectWrapper.txt", "CMakeLists.txt")
         tools.get("https://github.com/Kitware/VTK/archive/v{0}.tar.gz".format(self.version))
         os.rename("vtk-" + self.version, self.source_subfolder)
 
     def build(self):
-        vtk_source_dir = os.path.join(self.source_folder, "vtk-{0}".format(self.version))
+        vtk_source_dir = os.path.join(self.source_folder, self.source_subfolder)
         shutil.move("patches/CMakeProjectWrapper.txt", "CMakeLists.txt")
         tools.patch(vtk_source_dir, "patches/IO_Import_CMakeLists.diff")
         tools.patch(vtk_source_dir, "patches/optimization.diff")
