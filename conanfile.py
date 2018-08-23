@@ -49,7 +49,14 @@ class LibVTKConan(ConanFile):
                 "libx11-dev",
                 "libxext-dev",
                 "libxt-dev",
-                "libglu1-mesa-dev"
+                "libglu1-mesa-dev",
+                "libfreetype6-dev",
+                "libxml2-dev",
+                "libexpat1-dev",
+                "libicu-dev",
+                "libpng-dev",
+                "libjpeg-turbo8-dev",
+                "libtiff5-dev"
             ]
             installer = tools.SystemPackageTool()
             installer.update()
