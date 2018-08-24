@@ -93,7 +93,8 @@ class LibVTKConan(ConanFile):
 
         cmake.definitions["VTK_Group_StandAlone"] = "OFF"
 
-        cmake.definitions["VTK_INSTALL_QT_PLUGIN_DIR"] = os.path.join(self.deps_cpp_info["qt"].rootpath, "plugins")
+        qt_plugins_path = os.path.join(self.deps_cpp_info["qt"].rootpath, "plugins")
+        cmake.definitions["VTK_INSTALL_QT_PLUGIN_DIR"] = qt_plugins_path.replace("\\", "/")
 
         cmake.definitions["VTK_USE_GL2PS"] = "ON"
         cmake.definitions["VTK_USE_GLSL_SHADERS"] = "ON"
