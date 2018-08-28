@@ -127,6 +127,30 @@ class LibVTKConan(ConanFile):
         cmake.configure(build_folder=self.build_subfolder)
         cmake.build()
         cmake.install()
+        cmake.patch_config_paths()
+
+    def cmake_fix_path(self, file_path, package_name):
+        tools.replace_in_file(
+                    file_path,
+                    self.deps_cpp_info[package_name].rootpath.replace('\\', '/'),
+                    "${CONAN_"+package_name.upper()+"_ROOT}"
+        )
+
+    def package(self):
+        if not tools.os_info.is_linux:
+            vtkTargets_file = os.path.join(self.package_folder, "lib", "cmake", "vtk-8.0", "VTKTargets.cmake")
+            self.cmake_fix_path(vtkTargets_file, "zlib")
+            self.cmake_fix_path(vtkTargets_file, "freetype")
+            self.cmake_fix_path(vtkTargets_file, "glew")
+
+            vtkModules_dir = os.path.join(self.package_folder, "lib", "cmake", "vtk-8.0", "Modules")
+            self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkexpat.cmake"), "expat")
+            self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkfreetype.cmake"), "freetype")
+            self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkglew.cmake"), "glew")
+            self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkjpeg.cmake"), "libjpeg")
+            self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkpng.cmake"), "libpng")
+            self.cmake_fix_path(os.path.join(vtkModules_dir, "vtktiff.cmake"), "libtiff")
+            self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkzlib.cmake"), "zlib")
 
     def package_info(self):
         self.cpp_info.libs = tools.collect_libs(self)
