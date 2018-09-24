@@ -25,6 +25,9 @@ class LibVTKConan(ConanFile):
     build_subfolder = "build_subfolder"
     short_paths = True
 
+    def configure(self):
+        del self.settings.compiler.libcxx
+
     def requirements(self):
         self.requires("qt/5.11.1@fw4spl/stable")
         self.requires("glew/2.0.0@fw4spl/stable")
