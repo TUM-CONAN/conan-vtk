@@ -29,19 +29,19 @@ class LibVTKConan(ConanFile):
         del self.settings.compiler.libcxx
 
     def requirements(self):
-        self.requires("qt/5.11.1@fw4spl/stable")
-        self.requires("glew/2.0.0@fw4spl/stable")
+        self.requires("qt/5.11.1@sight/stable")
+        self.requires("glew/2.0.0@sight/stable")
         if not tools.os_info.is_linux:
-            self.requires("libjpeg/9c@fw4spl/stable")
-            self.requires("expat/2.2.5@fw4spl/stable")
-            self.requires("libxml2/2.9.8@fw4spl/stable")
-            self.requires("freetype/2.9.1@fw4spl/stable")
-            self.requires("libpng/1.6.34@fw4spl/stable")
-            self.requires("libtiff/4.0.9@fw4spl/stable")
-            self.requires("zlib/1.2.11@fw4spl/stable")
+            self.requires("libjpeg/9c@sight/stable")
+            self.requires("expat/2.2.5@sight/stable")
+            self.requires("libxml2/2.9.8@sight/stable")
+            self.requires("freetype/2.9.1@sight/stable")
+            self.requires("libpng/1.6.34@sight/stable")
+            self.requires("libtiff/4.0.9@sight/stable")
+            self.requires("zlib/1.2.11@sight/stable")
 
     def system_requirements(self):
-        if tools.os_info.linux_distro == "ubuntu":
+        if tools.os_info.linux_distro == "linuxmint":
             pack_names = [
                 "freeglut3-dev",
                 "mesa-common-dev",
