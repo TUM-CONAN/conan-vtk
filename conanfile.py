@@ -154,6 +154,7 @@ class LibVTKConan(ConanFile):
             self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkglew.cmake"), "glew")
             self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkjpeg.cmake"), "libjpeg")
             self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkpng.cmake"), "libpng")
+            self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkpng.cmake"), "zlib")
             self.cmake_fix_path(os.path.join(vtkModules_dir, "vtktiff.cmake"), "libtiff")
             self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkzlib.cmake"), "zlib")
 
