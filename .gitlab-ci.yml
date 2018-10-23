@@ -33,7 +33,7 @@ msvc2017:
     - windows
 
 gcc-7:
-  image: registry.lan.local:5000/docker-envdev:dev
+  image: registry.lan.local:5000/docker-envdev-gcc7:dev
   stage: build
   variables:
     CONAN_GCC_VERSIONS: "7"
@@ -43,7 +43,7 @@ gcc-7:
     - python3 build.py
 
 clang-6:
-  image: registry.lan.local:5000/docker-envdev:dev
+  image: registry.lan.local:5000/docker-envdev-clang6:dev
   stage: build
   variables:
     CONAN_CLANG_VERSIONS: "6.0"
