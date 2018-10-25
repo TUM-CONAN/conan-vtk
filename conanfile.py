@@ -5,7 +5,8 @@ import shutil
 
 class LibVTKConan(ConanFile):
     name = "vtk"
-    version = "8.0.1"
+    short_version = "8.0.1"
+    version = "{0}-r1".format(short_version)
     generators = "cmake"
     settings = "os", "arch", "compiler", "build_type"
     options = {"shared": [True, False]}
@@ -29,7 +30,7 @@ class LibVTKConan(ConanFile):
         del self.settings.compiler.libcxx
 
     def requirements(self):
-        self.requires("qt/5.11.1@sight/stable")
+        self.requires("qt/5.11.2@sight/stable")
         self.requires("glew/2.0.0@sight/stable")
         if not tools.os_info.is_linux:
             self.requires("libjpeg/9c@sight/stable")
@@ -66,8 +67,8 @@ class LibVTKConan(ConanFile):
             installer.install(" ".join(pack_names))
 
     def source(self):
-        tools.get("https://github.com/Kitware/VTK/archive/v{0}.tar.gz".format(self.version))
-        os.rename("VTK-" + self.version, self.source_subfolder)
+        tools.get("https://github.com/Kitware/VTK/archive/v{0}.tar.gz".format(self.short_version))
+        os.rename("VTK-" + self.short_version, self.source_subfolder)
 
     def build(self):
         vtk_source_dir = os.path.join(self.source_folder, self.source_subfolder)
@@ -131,8 +132,8 @@ class LibVTKConan(ConanFile):
 
         cmake.configure(build_folder=self.build_subfolder)
         cmake.build()
-        cmake.install()
         cmake.patch_config_paths()
+        cmake.install()
 
     def cmake_fix_path(self, file_path, package_name):
         tools.replace_in_file(

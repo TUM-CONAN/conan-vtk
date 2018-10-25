@@ -1,7 +1,6 @@
 variables:
-  CONAN_REFERENCE: "vtk/8.0.1"
-  CONAN_USERNAME: "sigth"
-  CONAN_LOGIN_USERNAME: "sight"
+  CONAN_REFERENCE: "vtk/8.0.1-r1"
+  CONAN_USERNAME: "sight"
   CONAN_CHANNEL: "stable"
   CONAN_STABLE_BRANCH_PATTERN: "stable/*"
   CONAN_UPLOAD_ONLY_WHEN_STABLE: 1
@@ -51,3 +50,13 @@ clang-6:
     - export CC=/usr/bin/clang-6.0
     - export CXX=/usr/bin/clang++-6.0
     - python3 build.py
+    
+macos:
+  stage: build
+  variables:
+    CONAN_APPLE_CLANG_VERSIONS: "9.1"
+    CONAN_USER_HOME: $CI_PROJECT_DIR
+  script:
+    - python3 build.py
+  tags:
+    - macos
