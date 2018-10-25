@@ -132,7 +132,6 @@ class LibVTKConan(ConanFile):
 
         cmake.configure(build_folder=self.build_subfolder)
         cmake.build()
-        cmake.patch_config_paths()
         cmake.install()
 
     def cmake_fix_path(self, file_path, package_name):
