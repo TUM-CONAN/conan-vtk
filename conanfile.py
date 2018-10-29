@@ -122,6 +122,7 @@ class LibVTKConan(ConanFile):
         cmake.definitions["Module_vtkIOLegacy"] = "ON"
         cmake.definitions["Module_vtkIOGeometry"] = "ON"
         cmake.definitions["Module_vtkIOPLY"] = "ON"
+        cmake.definitions["Module_vtkRenderingExternal"] = "ON"
 
         if tools.os_info.is_macos:
             cmake.definitions["VTK_USE_CARBON"] = "OFF"
