@@ -32,7 +32,8 @@ class LibVTKConan(ConanFile):
     def requirements(self):
         self.requires("qt/5.11.2@sight/stable")
         self.requires("glew/2.0.0@sight/stable")
-        if not tools.os_info.is_linux:
+        
+        if tools.os_info.is_windows:
             self.requires("libjpeg/9c@sight/stable")
             self.requires("expat/2.2.5@sight/stable")
             self.requires("libxml2/2.9.8@sight/stable")
@@ -40,6 +41,13 @@ class LibVTKConan(ConanFile):
             self.requires("libpng/1.6.34@sight/stable")
             self.requires("libtiff/4.0.9@sight/stable")
             self.requires("zlib/1.2.11@sight/stable")
+            
+        if tools.os_info.is_macos:
+            self.requires("libjpeg/9c@sight/stable")
+            self.requires("freetype/2.9.1@sight/stable")
+            self.requires("libpng/1.6.34@sight/stable")
+            self.requires("libtiff/4.0.9@sight/stable")
+            
 
     def system_requirements(self):
         if tools.os_info.linux_distro == "linuxmint":
@@ -154,15 +162,19 @@ class LibVTKConan(ConanFile):
         self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkViewsQt.cmake"), "qt")
 
         if not tools.os_info.is_linux:
-            self.cmake_fix_path(vtkTargets_file, "zlib")
-            self.cmake_fix_path(vtkTargets_file, "freetype")
-            self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkexpat.cmake"), "expat")
+            self.cmake_fix_path(vtkTargets_file, "freetype")            
             self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkfreetype.cmake"), "freetype")
             self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkjpeg.cmake"), "libjpeg")
-            self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkpng.cmake"), "libpng")
-            self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkpng.cmake"), "zlib")
+            self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkpng.cmake"), "libpng")            
             self.cmake_fix_path(os.path.join(vtkModules_dir, "vtktiff.cmake"), "libtiff")
-            self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkzlib.cmake"), "zlib")
+                        
+            if tools.os_info.is_windows:
+                self.cmake_fix_path(vtkTargets_file, "zlib")
+                self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkexpat.cmake"), "expat")
+                self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkpng.cmake"), "zlib")
+                self.cmake_fix_path(os.path.join(vtkModules_dir, "vtktiff.cmake"), "zlib")
+                self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkzlib.cmake"), "zlib")
+            
 
     def package_info(self):
         self.cpp_info.libs = tools.collect_libs(self)
