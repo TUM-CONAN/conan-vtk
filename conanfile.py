@@ -143,16 +143,21 @@ class LibVTKConan(ConanFile):
         )
 
     def package(self):
+        vtkTargets_file = os.path.join(self.package_folder, "lib", "cmake", "vtk-8.0", "VTKTargets.cmake")
+        vtkModules_dir = os.path.join(self.package_folder, "lib", "cmake", "vtk-8.0", "Modules")
+        self.cmake_fix_path(vtkTargets_file, "glew")
+        self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkglew.cmake"), "glew")
+        self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkGUISupportQt.cmake"), "qt")
+        self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkGUISupportQtOpenGL.cmake"), "qt")
+        self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkGUISupportQtSQL.cmake"), "qt")
+        self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkRenderingQt.cmake"), "qt")
+        self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkViewsQt.cmake"), "qt")
+
         if not tools.os_info.is_linux:
-            vtkTargets_file = os.path.join(self.package_folder, "lib", "cmake", "vtk-8.0", "VTKTargets.cmake")
             self.cmake_fix_path(vtkTargets_file, "zlib")
             self.cmake_fix_path(vtkTargets_file, "freetype")
-            self.cmake_fix_path(vtkTargets_file, "glew")
-
-            vtkModules_dir = os.path.join(self.package_folder, "lib", "cmake", "vtk-8.0", "Modules")
             self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkexpat.cmake"), "expat")
             self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkfreetype.cmake"), "freetype")
-            self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkglew.cmake"), "glew")
             self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkjpeg.cmake"), "libjpeg")
             self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkpng.cmake"), "libpng")
             self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkpng.cmake"), "zlib")
