@@ -186,13 +186,14 @@ class LibVTKConan(ConanFile):
             self.cmake_fix_path(vtkTargets_file, "freetype")            
             self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkfreetype.cmake"), "freetype")
             self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkjpeg.cmake"), "libjpeg")
-            self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkpng.cmake"), "libpng")            
+            self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkpng.cmake"), "libpng")
             self.cmake_fix_path(os.path.join(vtkModules_dir, "vtktiff.cmake"), "libtiff")
 
         if tools.os_info.is_windows:
             self.cmake_fix_path(vtkTargets_file, "zlib")
             self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkexpat.cmake"), "expat")
             self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkzlib.cmake"), "zlib")
+            self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkpng.cmake"), "zlib")
 
     def package_info(self):
         self.cpp_info.libs = tools.collect_libs(self)
