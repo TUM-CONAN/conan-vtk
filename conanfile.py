@@ -28,6 +28,8 @@ class LibVTKConan(ConanFile):
 
     def configure(self):
         del self.settings.compiler.libcxx
+        if 'CI' not in os.environ:
+            os.environ["CONAN_SYSREQUIRES_MODE"] = "verify"
 
     def requirements(self):
         self.requires("qt/5.11.2@sight/stable")
@@ -43,9 +45,8 @@ class LibVTKConan(ConanFile):
             self.requires("freetype/2.9.1@sight/stable")
             self.requires("libpng/1.6.34@sight/stable")
             self.requires("libtiff/4.0.9@sight/stable")
-            
 
-    def system_requirements(self):
+    def build_requirements(self):
         if tools.os_info.linux_distro == "linuxmint":
             pack_names = [
                 "freeglut3-dev",
@@ -67,8 +68,32 @@ class LibVTKConan(ConanFile):
                 "libtiff5-dev"
             ]
             installer = tools.SystemPackageTool()
-            installer.update()
-            installer.install(" ".join(pack_names))
+            for p in pack_names:
+                installer.install(p)
+
+    def system_requirements(self):
+        if tools.os_info.linux_distro == "linuxmint":
+            pack_names = [
+                "freeglut3",
+                "mesa-utils-extra",
+                "libgl1",
+                "libglapi-mesa",
+                "libsm6",
+                "libx11-6",
+                "libxext6",
+                "libxt6",
+                "libglu1-mesa",
+                "libfreetype6",
+                "libxml2",
+                "libexpat1",
+                "libicu55",
+                "libpng16-16",
+                "libjpeg-turbo8",
+                "libtiff5"
+            ]
+            installer = tools.SystemPackageTool()
+            for p in pack_names:
+                installer.install(p)
 
     def source(self):
         tools.get("https://github.com/Kitware/VTK/archive/v{0}.tar.gz".format(self.short_version))
