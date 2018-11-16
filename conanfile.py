@@ -49,13 +49,9 @@ class LibVTKConan(ConanFile):
     def build_requirements(self):
         if tools.os_info.linux_distro == "linuxmint":
             pack_names = [
-                "freeglut3-dev",
-                "mesa-common-dev",
-                "mesa-utils-extra",
                 "libgl1-mesa-dev",
                 "libglapi-mesa",
                 "libsm-dev",
-                "libx11-dev",
                 "libxext-dev",
                 "libxt-dev",
                 "libglu1-mesa-dev",
@@ -74,13 +70,7 @@ class LibVTKConan(ConanFile):
     def system_requirements(self):
         if tools.os_info.linux_distro == "linuxmint":
             pack_names = [
-                "freeglut3",
-                "mesa-utils-extra",
-                "libgl1",
-                "libglapi-mesa",
                 "libsm6",
-                "libx11-6",
-                "libxext6",
                 "libxt6",
                 "libglu1-mesa",
                 "libfreetype6",
@@ -92,6 +82,7 @@ class LibVTKConan(ConanFile):
                 "libtiff5"
             ]
             installer = tools.SystemPackageTool()
+            installer.install(["libgl1", "libgl1-mesa-glx"])
             for p in pack_names:
                 installer.install(p)
 
