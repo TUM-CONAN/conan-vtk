@@ -1,7 +1,9 @@
-from conans import ConanFile, CMake, tools, AutoToolsBuildEnvironment
-from conans.util import files
 import os
 import shutil
+
+from conans import ConanFile, CMake, tools, AutoToolsBuildEnvironment
+from conans.util import files
+
 
 class LibVTKConan(ConanFile):
     name = "vtk"
@@ -20,7 +22,7 @@ class LibVTKConan(ConanFile):
         "patches/offscreen_size_windows.diff"
     ]
     url = "https://gitlab.lan.local/conan/conan-vtk"
-    license="http://www.vtk.org/licensing/"
+    license = "http://www.vtk.org/licensing/"
     description = "Visualization Toolkit by Kitware"
     source_subfolder = "source_subfolder"
     build_subfolder = "build_subfolder"
@@ -34,12 +36,12 @@ class LibVTKConan(ConanFile):
     def requirements(self):
         self.requires("qt/5.11.2@sight/stable")
         self.requires("glew/2.0.0@sight/stable")
-        
+
         if tools.os_info.is_windows:
             self.requires("libxml2/2.9.8@sight/stable")
             self.requires("expat/2.2.5@sight/stable")
             self.requires("zlib/1.2.11@sight/stable")
-            
+
         if not tools.os_info.is_linux:
             self.requires("libjpeg/9c@sight/stable")
             self.requires("freetype/2.9.1@sight/stable")
@@ -157,31 +159,30 @@ class LibVTKConan(ConanFile):
 
     def cmake_fix_path(self, file_path, package_name):
         tools.replace_in_file(
-                    file_path,
-                    self.deps_cpp_info[package_name].rootpath.replace('\\', '/'),
-                    "${CONAN_"+package_name.upper()+"_ROOT}"
+            file_path,
+            self.deps_cpp_info[package_name].rootpath.replace('\\', '/'),
+            "${CONAN_" + package_name.upper() + "_ROOT}"
         )
 
     def package(self):
         if not tools.os_info.is_windows:
             vtkConfig_file = os.path.join(self.package_folder, "lib", "cmake", "vtk-8.0", "VTKConfig.cmake")
-            
+
             tools.replace_in_file(
                 vtkConfig_file,
                 self.package_folder,
                 "${CONAN_VTK_ROOT}"
             )
-            
+
             tools.replace_in_file(
                 vtkConfig_file,
                 os.path.join(self.build_folder, self.build_subfolder),
                 "${CONAN_VTK_ROOT}"
             )
-        
-        
+
         vtkTargets_file = os.path.join(self.package_folder, "lib", "cmake", "vtk-8.0", "VTKTargets.cmake")
         vtkModules_dir = os.path.join(self.package_folder, "lib", "cmake", "vtk-8.0", "Modules")
-        
+
         self.cmake_fix_path(vtkTargets_file, "glew")
         self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkglew.cmake"), "glew")
         self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkGUISupportQt.cmake"), "qt")
@@ -191,7 +192,7 @@ class LibVTKConan(ConanFile):
         self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkViewsQt.cmake"), "qt")
 
         if not tools.os_info.is_linux:
-            self.cmake_fix_path(vtkTargets_file, "freetype")            
+            self.cmake_fix_path(vtkTargets_file, "freetype")
             self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkfreetype.cmake"), "freetype")
             self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkjpeg.cmake"), "libjpeg")
             self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkpng.cmake"), "libpng")
