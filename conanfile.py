@@ -163,8 +163,25 @@ class LibVTKConan(ConanFile):
         )
 
     def package(self):
+        if not tools.os_info.is_windows:
+            vtkConfig_file = os.path.join(self.package_folder, "lib", "cmake", "vtk-8.0", "VTKConfig.cmake")
+            
+            tools.replace_in_file(
+                vtkConfig_file,
+                self.package_folder,
+                "${CONAN_VTK_ROOT}"
+            )
+            
+            tools.replace_in_file(
+                vtkConfig_file,
+                os.path.join(self.build_folder, self.build_subfolder),
+                "${CONAN_VTK_ROOT}"
+            )
+        
+        
         vtkTargets_file = os.path.join(self.package_folder, "lib", "cmake", "vtk-8.0", "VTKTargets.cmake")
         vtkModules_dir = os.path.join(self.package_folder, "lib", "cmake", "vtk-8.0", "Modules")
+        
         self.cmake_fix_path(vtkTargets_file, "glew")
         self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkglew.cmake"), "glew")
         self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkGUISupportQt.cmake"), "qt")
