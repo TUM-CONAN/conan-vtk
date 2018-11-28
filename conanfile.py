@@ -21,7 +21,7 @@ class LibVTKConan(ConanFile):
         "patches/QVTKOpenGLWidget.diff",
         "patches/offscreen_size_windows.diff"
     ]
-    url = "https://gitlab.lan.local/conan/conan-vtk"
+    url = "https://git.ircad.fr/conan/conan-vtk"
     license = "http://www.vtk.org/licensing/"
     description = "Visualization Toolkit by Kitware"
     source_subfolder = "source_subfolder"
