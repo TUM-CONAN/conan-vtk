@@ -61,7 +61,7 @@ class LibVTKConan(ConanFile):
                 "libxml2-dev",
                 "libexpat1-dev",
                 "libicu-dev",
-                "libpng-dev",
+                "libpng12-dev",
                 "libjpeg-turbo8-dev",
                 "libtiff5-dev"
             ]
@@ -79,7 +79,7 @@ class LibVTKConan(ConanFile):
                 "libxml2",
                 "libexpat1",
                 "libicu55",
-                "libpng16-16",
+                "libpng12-0",
                 "libjpeg-turbo8",
                 "libtiff5"
             ]
