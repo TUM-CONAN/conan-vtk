@@ -1,5 +1,6 @@
 import os
 import shutil
+import re
 
 from conans import ConanFile, CMake, tools, AutoToolsBuildEnvironment
 from conans.util import files
