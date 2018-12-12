@@ -164,6 +164,25 @@ class LibVTKConan(ConanFile):
             "${CONAN_" + package_name.upper() + "_ROOT}"
         )
 
+    def cmake_fix_macos_sdk_path(self, file_path):
+        # Read in the file
+        with open(file_path, 'r') as file:
+            file_data = file.read()
+
+        if file_data:
+            # Replace the target string
+            file_data = re.sub(
+                # Match sdk path
+                r';/Applications/Xcode\.app/Contents/Developer/Platforms/MacOSX\.platform/Developer/SDKs/MacOSX\d\d\.\d\d\.sdk/usr/include',
+                '',
+                file_data,
+                re.M
+            )
+
+            # Write the file out again
+            with open(file_path, 'w') as file:
+                file.write(file_data)
+
     def package(self):
         if not tools.os_info.is_windows:
             vtkConfig_file = os.path.join(self.package_folder, "lib", "cmake", "vtk-8.0", "VTKConfig.cmake")
@@ -203,6 +222,11 @@ class LibVTKConan(ConanFile):
             self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkexpat.cmake"), "expat")
             self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkzlib.cmake"), "zlib")
             self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkpng.cmake"), "zlib")
+
+        if tools.os_info.is_macos:
+            self.cmake_fix_macos_sdk_path(os.path.join(vtkModules_dir, "vtkexpat.cmake"))
+            self.cmake_fix_macos_sdk_path(os.path.join(vtkModules_dir, "vtkzlib.cmake"))
+            self.cmake_fix_macos_sdk_path(os.path.join(vtkModules_dir, "vtkpng.cmake"))
 
     def package_info(self):
         self.cpp_info.libs = tools.collect_libs(self)
