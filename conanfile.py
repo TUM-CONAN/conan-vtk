@@ -82,14 +82,13 @@ class LibVTKConan(ConanFile):
                 "libfreetype6",
                 "libxml2",
                 "libexpat1",
-                "libicu55",
                 "libjpeg-turbo8",
                 "libtiff5"
             ]
             if tools.os_info.os_version.major(fill=False) == "18":
-                pack_names.append("libpng12-0")
+                pack_names.extend(["libpng12-0", "libicu55"])
             elif tools.os_info.os_version.major(fill=False) == "19":
-                pack_names.append("libpng16-16")
+                pack_names.extend(["libpng16-16", "libicu60"])
             installer = tools.SystemPackageTool()
             installer.install(["libgl1", "libgl1-mesa-glx"])
             for p in pack_names:
