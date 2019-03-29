@@ -37,19 +37,19 @@ class LibVTKConan(ConanFile):
             os.environ["CONAN_SYSREQUIRES_MODE"] = "verify"
 
     def requirements(self):
-        self.requires("qt/5.11.2@sight/stable")
-        self.requires("glew/2.0.0@sight/stable")
+        self.requires("qt/5.12.2@sight/testing")
+        self.requires("glew/2.0.0-r1@sight/testing")
 
         if tools.os_info.is_windows:
-            self.requires("libxml2/2.9.8@sight/stable")
-            self.requires("expat/2.2.5@sight/stable")
-            self.requires("zlib/1.2.11@sight/stable")
+            self.requires("libxml2/2.9.8-r1@sight/testing")
+            self.requires("expat/2.2.5-r1@sight/testing")
+            self.requires("zlib/1.2.11-r1@sight/testing")
 
         if not tools.os_info.is_linux:
-            self.requires("libjpeg/9c@sight/stable")
-            self.requires("freetype/2.9.1@sight/stable")
-            self.requires("libpng/1.6.34@sight/stable")
-            self.requires("libtiff/4.0.9@sight/stable")
+            self.requires("libjpeg/9c-r1@sight/testing")
+            self.requires("freetype/2.9.1-r1@sight/testing")
+            self.requires("libpng/1.6.34-r1@sight/testing")
+            self.requires("libtiff/4.0.9-r1@sight/testing")
 
     def build_requirements(self):
         if tools.os_info.linux_distro == "linuxmint":
@@ -193,7 +193,7 @@ class LibVTKConan(ConanFile):
 
     def package(self):
         if not tools.os_info.is_windows:
-            vtkConfig_file = os.path.join(self.package_folder, "lib", "cmake", "vtk-8.0", "VTKConfig.cmake")
+            vtkConfig_file = os.path.join(self.package_folder, "lib", "cmake", "vtk-8.2", "VTKConfig.cmake")
 
             tools.replace_in_file(
                 vtkConfig_file,
@@ -207,8 +207,8 @@ class LibVTKConan(ConanFile):
                 "${CONAN_VTK_ROOT}"
             )
 
-        vtkTargets_file = os.path.join(self.package_folder, "lib", "cmake", "vtk-8.0", "VTKTargets.cmake")
-        vtkModules_dir = os.path.join(self.package_folder, "lib", "cmake", "vtk-8.0", "Modules")
+        vtkTargets_file = os.path.join(self.package_folder, "lib", "cmake", "vtk-8.2", "VTKTargets.cmake")
+        vtkModules_dir = os.path.join(self.package_folder, "lib", "cmake", "vtk-8.2", "Modules")
 
         self.cmake_fix_path(vtkTargets_file, "glew")
         self.cmake_fix_path(os.path.join(vtkModules_dir, "vtkglew.cmake"), "glew")
