@@ -8,8 +8,10 @@ from conans.util import files
 
 class LibVTKConan(ConanFile):
     name = "vtk"
-    short_version = "8.0.1"
-    version = "{0}-r1".format(short_version)
+    upstream_version = "8.2.0"
+    package_revision = ""
+    version = "{0}{1}".format(upstream_version, package_revision)
+
     generators = "cmake"
     settings = "os", "arch", "compiler", "build_type"
     options = {"shared": [True, False]}
@@ -95,8 +97,8 @@ class LibVTKConan(ConanFile):
                 installer.install(p)
 
     def source(self):
-        tools.get("https://github.com/Kitware/VTK/archive/v{0}.tar.gz".format(self.short_version))
-        os.rename("VTK-" + self.short_version, self.source_subfolder)
+        tools.get("https://github.com/Kitware/VTK/archive/v{0}.tar.gz".format(self.upstream_version))
+        os.rename("VTK-" + self.upstream_version, self.source_subfolder)
 
     def build(self):
         vtk_source_dir = os.path.join(self.source_folder, self.source_subfolder)
