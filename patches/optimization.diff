@@ -1,10 +1,12 @@
---- a/Rendering/OpenGL/vtkPixelBufferObject.cxx	2016-11-14 16:05:14.000000000 +0100
-+++ b/Rendering/OpenGL/vtkPixelBufferObject.cxx	2017-03-16 14:28:35.860670400 +0100
-@@ -321,52 +321,77 @@
+diff --git a/a/Rendering/OpenGL2/vtkPixelBufferObject.cxx b/b/Rendering/OpenGL2/vtkPixelBufferObject.cxx
+index 6778bf4..96e4f2f 100644
+--- a/a/Rendering/OpenGL2/vtkPixelBufferObject.cxx
++++ b/b/Rendering/OpenGL2/vtkPixelBufferObject.cxx
+@@ -271,52 +271,77 @@ public:
  
        int numComp;
-       int *permutation=0;
-+
+       int *permutation=nullptr;
++      
 +      // If no component reordering is necessary, we can make some optimization
        if(components==0)
        {
@@ -15,13 +17,13 @@
 +        // Shortest path, everything is contiguous in memory
 +        // (tested with a 1980x1080x1, 4 bytes per component, RGBA image: 80% faster in release, 97% faster in debug)
 +        if(continuousIncrements[0] == 0 && continuousIncrements[1] == 0 && continuousIncrements[2] == 0)
-+        {
-+            memcpy(fIoMem, inData, numComponents * dims[0] * dims[1] * dims[2]);
-+        }
-+        else
          {
 -          permutation[i]=i;
 -          ++i;
++            memcpy(fIoMem, inData, numComponents * dims[0] * dims[1] * dims[2]);
++        }
++        else
++        {
 +          // This is not contiguous in memory but we can skip the reordering
 +          // (tested with a 1980x1080x1, 4 bytes per component, image: 0% faster in release but 65% faster in debug)
 +          vtkIdType tupleSize =
@@ -69,6 +71,8 @@
 -              *fIoMem = inData[permutation[compNo]];
 -//              cout<<"upload[zz="<<zz<<"][yy="<<yy<<"][xx="<<xx<<"][compNo="<<
 -//              compNo<<"] from inData to pbo="<<(double)(*fIoMem)<<endl;
+-
+-              fIoMem++;
 +              for (unsigned int xx=0; xx < dims[0]; xx++)
 +              {
 +                for (int compNo=0; compNo < numComp; compNo++)
@@ -76,8 +80,7 @@
 +                  *fIoMem = inData[permutation[compNo]];
 +    //              cout<<"upload[zz="<<zz<<"][yy="<<yy<<"][xx="<<xx<<"][compNo="<<
 +    //              compNo<<"] from inData to pbo="<<(double)(*fIoMem)<<endl;
- 
--              fIoMem++;
++
 +                  fIoMem++;
 +                }
 +                inData += tupleSize+continuousIncrements[0];
