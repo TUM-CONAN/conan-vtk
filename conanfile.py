@@ -115,7 +115,7 @@ class LibVTKConan(ConanFile):
         tools.patch(vtk_source_dir, "patches/offscreen_size_windows.diff")
 
         # Patch all headers that contains Qt stuff to use Q_SIGNALS Q_SLOTS variant
-        self.replace_qt_keyword(os.path.join(vtk_source_dir, 'GUISupport', 'QtOpenGL'))
+        self.replace_qt_keyword(os.path.join(vtk_source_dir))
 
         cmake = CMake(self)
         cmake.definitions["BUILD_EXAMPLES"] = "OFF"
@@ -204,6 +204,9 @@ class LibVTKConan(ConanFile):
                 file.write(file_data)
 
     def package(self):
+        # Patch all headers that contains Qt stuff to use Q_SIGNALS Q_SLOTS variant
+        self.replace_qt_keyword(os.path.join(self.package_folder, 'include'))
+
         for path, subdirs, names in os.walk(os.path.join(self.package_folder, 'lib', 'cmake')):
             for name in names:
                 if fnmatch(name, '*.cmake'):
