@@ -1,3 +1,7 @@
+Description: Add a test if RenderWindow is "OffScreenRendering"
+Author: Flavien Bridault <flavien.bridault@ircad.fr>
+Version: 8.2.0
+
 diff --git a/a/Rendering/OpenGL2/vtkWin32OpenGLRenderWindow.cxx b/b/Rendering/OpenGL2/vtkWin32OpenGLRenderWindow.cxx
 index 6cbf334..583d28d 100644
 --- a/a/Rendering/OpenGL2/vtkWin32OpenGLRenderWindow.cxx

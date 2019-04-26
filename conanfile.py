@@ -100,6 +100,8 @@ class LibVTKConan(ConanFile):
         tools.get("https://github.com/Kitware/VTK/archive/v{0}.tar.gz".format(self.upstream_version))
         os.rename("VTK-" + self.upstream_version, self.source_subfolder)
 
+    # This is needed until the MR (https://gitlab.kitware.com/vtk/vtk/merge_requests/5467) is merged on a VTK release.
+    # Ensure that every signals & slots keywords are replaced by Q_SIGNALS and Q_SLOTS.
     def replace_qt_keyword(self, root):
         for path, subdirs, names in os.walk(root):
             for name in names:
@@ -115,6 +117,7 @@ class LibVTKConan(ConanFile):
         tools.patch(vtk_source_dir, "patches/offscreen_size_windows.diff")
 
         # Patch all headers that contains Qt stuff to use Q_SIGNALS Q_SLOTS variant
+        # Ensure that VTK is compiling.
         self.replace_qt_keyword(os.path.join(vtk_source_dir))
 
         cmake = CMake(self)
@@ -141,9 +144,8 @@ class LibVTKConan(ConanFile):
         cmake.definitions["VTK_LEGACY_REMOVE"] = "OFF"
         cmake.definitions["VTK_USE_PARALLEL"] = "ON"
         cmake.definitions["VTK_USE_HYBRID"] = "ON"
-        cmake.definitions["TK_Group_Qt"] = "OFF"
+        cmake.definitions["VTK_Group_Qt"] = "OFF"
         cmake.definitions["VTK_WRAP_PYTHON"] = "OFF"
-        cmake.definitions["VTK_MAKE_INSTANTIATORS"] = "ON"
         cmake.definitions["VTK_QT_VERSION"] = "5"
         cmake.definitions["VTK_BUILD_QT_DESIGNER_PLUGIN"] = "OFF"
         cmake.definitions["Module_vtkFiltersFlowPaths"] = "ON"

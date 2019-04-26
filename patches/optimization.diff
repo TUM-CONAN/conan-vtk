@@ -1,3 +1,7 @@
+Description: Optimize Upload of vtkUpload3D.
+Author: Flavien Bridault <flavien.bridault@ircad.fr>
+Version: VTK 8.2.0
+
 diff --git a/a/Rendering/OpenGL2/vtkPixelBufferObject.cxx b/b/Rendering/OpenGL2/vtkPixelBufferObject.cxx
 index 6778bf4..96e4f2f 100644
 --- a/a/Rendering/OpenGL2/vtkPixelBufferObject.cxx
