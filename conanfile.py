@@ -9,7 +9,7 @@ from conans import ConanFile, CMake, tools
 class LibVTKConan(ConanFile):
     name = "vtk"
     upstream_version = "8.2.0"
-    package_revision = ""
+    package_revision = "-r1"
     version = "{0}{1}".format(upstream_version, package_revision)
 
     generators = "cmake"
@@ -37,19 +37,20 @@ class LibVTKConan(ConanFile):
             os.environ["CONAN_SYSREQUIRES_MODE"] = "verify"
 
     def requirements(self):
-        self.requires("qt/5.12.2@sight/stable")
-        self.requires("glew/2.0.0-r1@sight/stable")
+        self.requires("common/1.0.0@sight/stable")
+        self.requires("qt/5.12.2-r1@sight/testing")
+        self.requires("glew/2.0.0-r2@sight/testing")
 
         if tools.os_info.is_windows:
-            self.requires("libxml2/2.9.8-r1@sight/stable")
-            self.requires("expat/2.2.5-r1@sight/stable")
-            self.requires("zlib/1.2.11-r1@sight/stable")
+            self.requires("libxml2/2.9.8-r2@sight/testing")
+            self.requires("expat/2.2.5-r2@sight/testing")
+            self.requires("zlib/1.2.11-r2@sight/testing")
 
         if not tools.os_info.is_linux:
-            self.requires("libjpeg/9c-r1@sight/stable")
-            self.requires("freetype/2.9.1-r1@sight/stable")
-            self.requires("libpng/1.6.34-r1@sight/stable")
-            self.requires("libtiff/4.0.9-r1@sight/stable")
+            self.requires("libjpeg/9c-r2@sight/testing")
+            self.requires("freetype/2.9.1-r2@sight/testing")
+            self.requires("libpng/1.6.34-r2@sight/testing")
+            self.requires("libtiff/4.0.9-r2@sight/testing")
 
     def build_requirements(self):
         if tools.os_info.linux_distro == "linuxmint":
@@ -110,6 +111,8 @@ class LibVTKConan(ConanFile):
                     tools.replace_in_file(os.path.join(path, name), 'slots:', 'Q_SLOTS:', strict=False)                   
 
     def build(self):
+        #Import common flags and defines
+        import common
         vtk_source_dir = os.path.join(self.source_folder, self.source_subfolder)
         shutil.move("patches/CMakeProjectWrapper.txt", "CMakeLists.txt")
 
@@ -121,6 +124,11 @@ class LibVTKConan(ConanFile):
         self.replace_qt_keyword(os.path.join(vtk_source_dir))
 
         cmake = CMake(self)
+        
+        #Set common flags
+        cmake.definitions["CMAKE_C_FLAGS"] = common.get_c_flags()
+        cmake.definitions["CMAKE_CXX_FLAGS"] = common.get_cxx_flags()
+        
         cmake.definitions["BUILD_EXAMPLES"] = "OFF"
         cmake.definitions["BUILD_TESTING"] = "OFF"
         cmake.definitions["BUILD_DOCUMENTATION"] = "OFF"
