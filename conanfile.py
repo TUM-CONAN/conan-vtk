@@ -18,10 +18,7 @@ class LibVTKConan(ConanFile):
     default_options = "shared=True"
     exports = [
         "patches/CMakeProjectWrapper.txt",
-        "patches/IO_Import_CMakeLists.diff",
         "patches/optimization.diff",
-        "patches/CMakeLists_glew.diff",
-        "patches/QVTKOpenGLWidget.diff",
         "patches/offscreen_size_windows.diff"
     ]
     url = "https://git.ircad.fr/conan/conan-vtk"
@@ -39,7 +36,6 @@ class LibVTKConan(ConanFile):
     def requirements(self):
         self.requires("common/1.0.0@sight/stable")
         self.requires("qt/5.12.2-r1@sight/testing")
-        self.requires("glew/2.0.0-r2@sight/testing")
 
         if tools.os_info.is_windows:
             self.requires("libxml2/2.9.8-r2@sight/testing")
@@ -47,6 +43,7 @@ class LibVTKConan(ConanFile):
             self.requires("zlib/1.2.11-r2@sight/testing")
 
         if not tools.os_info.is_linux:
+            self.requires("glew/2.0.0-r2@sight/testing")
             self.requires("libjpeg/9c-r2@sight/testing")
             self.requires("freetype/2.9.1-r2@sight/testing")
             self.requires("libpng/1.6.34-r2@sight/testing")
@@ -66,7 +63,8 @@ class LibVTKConan(ConanFile):
                 "libexpat1-dev",
                 "libicu-dev",
                 "libjpeg-turbo8-dev",
-                "libtiff5-dev"
+                "libtiff5-dev",
+                "libglew-dev"
             ]
             if tools.os_info.os_version.major(fill=False) == "18":
                 pack_names.append("libpng12-dev")
@@ -89,9 +87,9 @@ class LibVTKConan(ConanFile):
                 "libtiff5"
             ]
             if tools.os_info.os_version.major(fill=False) == "18":
-                pack_names.extend(["libpng12-0", "libicu55"])
+                pack_names.extend(["libpng12-0", "libicu55", "libglew1.13"])
             elif tools.os_info.os_version.major(fill=False) == "19":
-                pack_names.extend(["libpng16-16", "libicu60"])
+                pack_names.extend(["libpng16-16", "libicu60", "libglew2.0"])
             installer = tools.SystemPackageTool()
             installer.install(["libgl1", "libgl1-mesa-glx"])
             for p in pack_names:
