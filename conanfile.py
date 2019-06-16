@@ -125,8 +125,8 @@ class LibVTKConan(ConanFile):
         cmake = CMake(self)
         
         # Set common flags
-        cmake.definitions["SIGHT_CMAKE_C_FLAGS"] = common.get_c_flags() + " --fuck "
-        cmake.definitions["SIGHT_CMAKE_CXX_FLAGS"] = common.get_cxx_flags() + " --fuck "
+        cmake.definitions["SIGHT_CMAKE_C_FLAGS"] = common.get_c_flags()
+        cmake.definitions["SIGHT_CMAKE_CXX_FLAGS"] = common.get_cxx_flags()
         
         cmake.definitions["BUILD_EXAMPLES"] = "OFF"
         cmake.definitions["BUILD_TESTING"] = "OFF"
