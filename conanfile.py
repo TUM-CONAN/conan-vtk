@@ -9,7 +9,7 @@ from conans import ConanFile, CMake, tools
 class LibVTKConan(ConanFile):
     name = "vtk"
     upstream_version = "8.2.0"
-    package_revision = ""
+    package_revision = "-r1"
     version = "{0}{1}".format(upstream_version, package_revision)
 
     generators = "cmake"
@@ -18,10 +18,7 @@ class LibVTKConan(ConanFile):
     default_options = "shared=True"
     exports = [
         "patches/CMakeProjectWrapper.txt",
-        "patches/IO_Import_CMakeLists.diff",
         "patches/optimization.diff",
-        "patches/CMakeLists_glew.diff",
-        "patches/QVTKOpenGLWidget.diff",
         "patches/offscreen_size_windows.diff"
     ]
     url = "https://git.ircad.fr/conan/conan-vtk"
@@ -37,19 +34,20 @@ class LibVTKConan(ConanFile):
             os.environ["CONAN_SYSREQUIRES_MODE"] = "verify"
 
     def requirements(self):
-        self.requires("qt/5.12.2@sight/stable")
-        self.requires("glew/2.0.0-r1@sight/stable")
+        self.requires("common/1.0.0@sight/stable")
+        self.requires("qt/5.12.2-r1@sight/stable")
 
         if tools.os_info.is_windows:
-            self.requires("libxml2/2.9.8-r1@sight/stable")
-            self.requires("expat/2.2.5-r1@sight/stable")
-            self.requires("zlib/1.2.11-r1@sight/stable")
+            self.requires("libxml2/2.9.8-r2@sight/stable")
+            self.requires("expat/2.2.5-r2@sight/stable")
+            self.requires("zlib/1.2.11-r2@sight/stable")
 
         if not tools.os_info.is_linux:
-            self.requires("libjpeg/9c-r1@sight/stable")
-            self.requires("freetype/2.9.1-r1@sight/stable")
-            self.requires("libpng/1.6.34-r1@sight/stable")
-            self.requires("libtiff/4.0.9-r1@sight/stable")
+            self.requires("glew/2.0.0-r2@sight/stable")
+            self.requires("libjpeg/9c-r2@sight/stable")
+            self.requires("freetype/2.9.1-r2@sight/stable")
+            self.requires("libpng/1.6.34-r2@sight/stable")
+            self.requires("libtiff/4.0.9-r2@sight/stable")
 
     def build_requirements(self):
         if tools.os_info.linux_distro == "linuxmint":
@@ -65,7 +63,8 @@ class LibVTKConan(ConanFile):
                 "libexpat1-dev",
                 "libicu-dev",
                 "libjpeg-turbo8-dev",
-                "libtiff5-dev"
+                "libtiff5-dev",
+                "libglew-dev"
             ]
             if tools.os_info.os_version.major(fill=False) == "18":
                 pack_names.append("libpng12-dev")
@@ -88,9 +87,9 @@ class LibVTKConan(ConanFile):
                 "libtiff5"
             ]
             if tools.os_info.os_version.major(fill=False) == "18":
-                pack_names.extend(["libpng12-0", "libicu55"])
+                pack_names.extend(["libpng12-0", "libicu55", "libglew1.13"])
             elif tools.os_info.os_version.major(fill=False) == "19":
-                pack_names.extend(["libpng16-16", "libicu60"])
+                pack_names.extend(["libpng16-16", "libicu60", "libglew2.0"])
             installer = tools.SystemPackageTool()
             installer.install(["libgl1", "libgl1-mesa-glx"])
             for p in pack_names:
@@ -110,6 +109,9 @@ class LibVTKConan(ConanFile):
                     tools.replace_in_file(os.path.join(path, name), 'slots:', 'Q_SLOTS:', strict=False)                   
 
     def build(self):
+        # Import common flags and defines
+        import common
+
         vtk_source_dir = os.path.join(self.source_folder, self.source_subfolder)
         shutil.move("patches/CMakeProjectWrapper.txt", "CMakeLists.txt")
 
@@ -121,6 +123,11 @@ class LibVTKConan(ConanFile):
         self.replace_qt_keyword(os.path.join(vtk_source_dir))
 
         cmake = CMake(self)
+        
+        # Set common flags
+        cmake.definitions["SIGHT_CMAKE_C_FLAGS"] = common.get_c_flags()
+        cmake.definitions["SIGHT_CMAKE_CXX_FLAGS"] = common.get_cxx_flags()
+        
         cmake.definitions["BUILD_EXAMPLES"] = "OFF"
         cmake.definitions["BUILD_TESTING"] = "OFF"
         cmake.definitions["BUILD_DOCUMENTATION"] = "OFF"
