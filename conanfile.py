@@ -35,19 +35,19 @@ class LibVTKConan(ConanFile):
 
     def requirements(self):
         self.requires("common/1.0.0@sight/stable")
-        self.requires("qt/5.12.2-r1@sight/testing")
+        self.requires("qt/5.12.2-r1@sight/stable")
 
         if tools.os_info.is_windows:
-            self.requires("libxml2/2.9.8-r2@sight/testing")
-            self.requires("expat/2.2.5-r2@sight/testing")
-            self.requires("zlib/1.2.11-r2@sight/testing")
+            self.requires("libxml2/2.9.8-r2@sight/stable")
+            self.requires("expat/2.2.5-r2@sight/stable")
+            self.requires("zlib/1.2.11-r2@sight/stable")
 
         if not tools.os_info.is_linux:
-            self.requires("glew/2.0.0-r2@sight/testing")
-            self.requires("libjpeg/9c-r2@sight/testing")
-            self.requires("freetype/2.9.1-r2@sight/testing")
-            self.requires("libpng/1.6.34-r2@sight/testing")
-            self.requires("libtiff/4.0.9-r2@sight/testing")
+            self.requires("glew/2.0.0-r2@sight/stable")
+            self.requires("libjpeg/9c-r2@sight/stable")
+            self.requires("freetype/2.9.1-r2@sight/stable")
+            self.requires("libpng/1.6.34-r2@sight/stable")
+            self.requires("libtiff/4.0.9-r2@sight/stable")
 
     def build_requirements(self):
         if tools.os_info.linux_distro == "linuxmint":
