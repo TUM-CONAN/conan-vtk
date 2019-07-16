@@ -34,20 +34,21 @@ class LibVTKConan(ConanFile):
             os.environ["CONAN_SYSREQUIRES_MODE"] = "verify"
 
     def requirements(self):
-        self.requires("common/1.0.0@sight/stable")
-        self.requires("qt/5.12.2-r1@sight/stable")
+        self.requires("ircad_common/1.0.0@camposs/stable")
+        self.requires("qt/5.12.2-r1@ircad/testing")
+        # self.requires("qt/5.12.2@bincrafters/stable")
 
         if tools.os_info.is_windows:
-            self.requires("libxml2/2.9.8-r2@sight/stable")
-            self.requires("expat/2.2.5-r2@sight/stable")
-            self.requires("zlib/1.2.11-r2@sight/stable")
+            self.requires("libxml2/2.9.8-r2@camposs/stable")
+            self.requires("expat/2.2.5-r2@camposs/stable")
+            self.requires("zlib/1.2.11@camposs/stable")
 
         if not tools.os_info.is_linux:
-            self.requires("glew/2.0.0-r2@sight/stable")
-            self.requires("libjpeg/9c-r2@sight/stable")
-            self.requires("freetype/2.9.1-r2@sight/stable")
-            self.requires("libpng/1.6.34-r2@sight/stable")
-            self.requires("libtiff/4.0.9-r2@sight/stable")
+            self.requires("glew/2.1.0@camposs/stable")
+            self.requires("libjpeg/9c-r2@camposs/stable")
+            self.requires("freetype/2.9.1@bincrafters/stable")
+            self.requires("libpng/1.6.36@bincrafters/stable")
+            self.requires("libtiff/4.0.9@bincrafters/stable")
 
     def build_requirements(self):
         if tools.os_info.linux_distro == "linuxmint":
@@ -64,12 +65,33 @@ class LibVTKConan(ConanFile):
                 "libicu-dev",
                 "libjpeg-turbo8-dev",
                 "libtiff5-dev",
-                "libglew-dev"
+                "libglew-dev",
+                "libpng-dev",
             ]
             if tools.os_info.os_version.major(fill=False) == "18":
                 pack_names.append("libpng12-dev")
             elif tools.os_info.os_version.major(fill=False) == "19":
                 pack_names.append("libpng-dev")
+            installer = tools.SystemPackageTool()
+            for p in pack_names:
+                installer.install(p)
+        if tools.os_info.linux_distro == "ubuntu":
+            pack_names = [
+                "libgl1-mesa-dev",
+                "libglapi-mesa",
+                "libsm-dev",
+                "libxext-dev",
+                "libxt-dev",
+                "libglu1-mesa-dev",
+                "libfreetype6-dev",
+                "libxml2-dev",
+                "libexpat1-dev",
+                "libicu-dev",
+                "libjpeg-turbo8-dev",
+                "libtiff5-dev",
+                "libglew-dev",
+                "libpng-dev",
+            ]
             installer = tools.SystemPackageTool()
             for p in pack_names:
                 installer.install(p)
@@ -90,6 +112,24 @@ class LibVTKConan(ConanFile):
                 pack_names.extend(["libpng12-0", "libicu55", "libglew1.13"])
             elif tools.os_info.os_version.major(fill=False) == "19":
                 pack_names.extend(["libpng16-16", "libicu60", "libglew2.0"])
+            installer = tools.SystemPackageTool()
+            installer.install(["libgl1", "libgl1-mesa-glx"])
+            for p in pack_names:
+                installer.install(p)
+        if tools.os_info.linux_distro == "ubuntu":
+            pack_names = [
+                "libsm6",
+                "libxt6",
+                "libglu1-mesa",
+                "libfreetype6",
+                "libxml2",
+                "libexpat1",
+                "libjpeg-turbo8",
+                "libtiff5",
+                "libpng16-16", 
+                "libicu60", 
+                "libglew2.0"
+            ]
             installer = tools.SystemPackageTool()
             installer.install(["libgl1", "libgl1-mesa-glx"])
             for p in pack_names:
