@@ -30,8 +30,8 @@ class LibVTKConan(ConanFile):
 
     def configure(self):
         del self.settings.compiler.libcxx
-        if 'CI' not in os.environ:
-            os.environ["CONAN_SYSREQUIRES_MODE"] = "verify"
+        # if 'CI' not in os.environ:
+        #     os.environ["CONAN_SYSREQUIRES_MODE"] = "verify"
 
     def requirements(self):
         self.requires("ircad_common/1.0.0@camposs/stable")
