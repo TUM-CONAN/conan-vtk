@@ -9,7 +9,7 @@ from conans import ConanFile, CMake, tools
 class LibVTKConan(ConanFile):
     name = "vtk"
     upstream_version = "8.2.0"
-    package_revision = "-r1"
+    package_revision = "-r2"
     version = "{0}{1}".format(upstream_version, package_revision)
 
     generators = "cmake"
@@ -35,7 +35,7 @@ class LibVTKConan(ConanFile):
 
     def requirements(self):
         self.requires("common/1.0.0@sight/stable")
-        self.requires("qt/5.12.2-r1@sight/stable")
+        self.requires("qt/5.12.4@sight/stable")
 
         if tools.os_info.is_windows:
             self.requires("libxml2/2.9.8-r2@sight/stable")
