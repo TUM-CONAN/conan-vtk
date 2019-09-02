@@ -35,7 +35,7 @@ class LibVTKConan(ConanFile):
 
     def requirements(self):
         self.requires("common/1.0.0@sight/stable")
-        self.requires("qt/5.12.4@sight/testing")
+        self.requires("qt/5.12.4@sight/stable")
 
         if tools.os_info.is_windows:
             self.requires("libxml2/2.9.8-r2@sight/stable")
