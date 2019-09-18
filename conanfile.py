@@ -29,7 +29,6 @@ class LibVTKConan(ConanFile):
     short_paths = True
 
     def configure(self):
-        del self.settings.compiler.libcxx
         if 'CI' not in os.environ:
             os.environ["CONAN_SYSREQUIRES_MODE"] = "verify"
 
@@ -106,7 +105,7 @@ class LibVTKConan(ConanFile):
             for name in names:
                 if fnmatch(name, '*.h'):
                     tools.replace_in_file(os.path.join(path, name), 'signals:', 'Q_SIGNALS:', strict=False)
-                    tools.replace_in_file(os.path.join(path, name), 'slots:', 'Q_SLOTS:', strict=False)                   
+                    tools.replace_in_file(os.path.join(path, name), 'slots:', 'Q_SLOTS:', strict=False)
 
     def build(self):
         # Import common flags and defines
@@ -123,11 +122,13 @@ class LibVTKConan(ConanFile):
         self.replace_qt_keyword(os.path.join(vtk_source_dir))
 
         cmake = CMake(self)
-        
-        # Set common flags
-        cmake.definitions["SIGHT_CMAKE_C_FLAGS"] = common.get_c_flags()
+
+        # Export common flags
         cmake.definitions["SIGHT_CMAKE_CXX_FLAGS"] = common.get_cxx_flags()
-        
+        cmake.definitions["SIGHT_CMAKE_CXX_FLAGS_RELEASE"] = common.get_cxx_flags_release()
+        cmake.definitions["SIGHT_CMAKE_CXX_FLAGS_DEBUG"] = common.get_cxx_flags_debug()
+        cmake.definitions["SIGHT_CMAKE_CXX_FLAGS_RELWITHDEBINFO"] = common.get_cxx_flags_relwithdebinfo()
+
         cmake.definitions["BUILD_EXAMPLES"] = "OFF"
         cmake.definitions["BUILD_TESTING"] = "OFF"
         cmake.definitions["BUILD_DOCUMENTATION"] = "OFF"
@@ -190,7 +191,7 @@ class LibVTKConan(ConanFile):
                 "${CONAN_" + package_name.upper() + "_ROOT}",
                 strict=False
             )
-        except:
+        except BaseException:
             self.output.info("Ignoring {0}...".format(package_name))
 
     def cmake_fix_macos_sdk_path(self, file_path):
@@ -220,21 +221,21 @@ class LibVTKConan(ConanFile):
             for name in names:
                 if fnmatch(name, '*.cmake'):
                     cmake_file = os.path.join(path, name)
-                    
+
                     tools.replace_in_file(
-                        cmake_file, 
-                        self.package_folder, 
-                        '${CONAN_VTK_ROOT}', 
+                        cmake_file,
+                        self.package_folder,
+                        '${CONAN_VTK_ROOT}',
                         strict=False
                     )
-                    
+
                     tools.replace_in_file(
                         cmake_file,
                         os.path.join(self.build_folder, self.build_subfolder),
                         '${CONAN_VTK_ROOT}',
                         strict=False
                     )
-                    
+
                     self.cmake_fix_path(cmake_file, "glew")
                     self.cmake_fix_path(cmake_file, "qt")
                     self.cmake_fix_path(cmake_file, "freetype")
