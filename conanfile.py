@@ -201,13 +201,10 @@ class LibVTKConan(ConanFile):
 
         if file_data:
             # Replace the target string
-            file_data = re.sub(
-                # Match sdk path
-                r';/Applications/Xcode\.app/Contents/Developer/Platforms/MacOSX\.platform/Developer/SDKs/MacOSX\d\d\.\d\d\.sdk/usr/include',
-                '',
-                file_data,
-                re.M
-            )
+            pattern = (r';/Applications/Xcode\.app/Contents/Developer'
+                       r'/Platforms/MacOSX\.platform/Developer/SDKs/MacOSX\d\d\.\d\d\.sdk/usr/include')
+            # Match sdk path
+            file_data = re.sub(pattern, '', file_data, re.M)
 
             # Write the file out again
             with open(file_path, 'w') as file:
