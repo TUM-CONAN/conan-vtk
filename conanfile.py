@@ -23,6 +23,7 @@ class LibVTKConan(ConanFile):
     license = "http://www.vtk.org/licensing/"
     description = "Visualization Toolkit by Kitware"
     source_subfolder = "source_subfolder"
+    build_subfolder = "build_subfolder"
     short_paths = True
 
     def configure(self):
@@ -176,7 +177,7 @@ class LibVTKConan(ConanFile):
         if not tools.os_info.is_windows:
             cmake.definitions["CMAKE_POSITION_INDEPENDENT_CODE"] = "ON"
 
-        cmake.configure()
+        cmake.configure(build_folder=self.build_subfolder)
         cmake.build()
         cmake.install()
 
