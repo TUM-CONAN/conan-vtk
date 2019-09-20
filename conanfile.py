@@ -17,7 +17,6 @@ class LibVTKConan(ConanFile):
     options = {"shared": [True, False]}
     default_options = "shared=True"
     exports = [
-        "patches/CMakeProjectWrapper.txt",
         "patches/optimization.diff",
         "patches/offscreen_size_windows.diff"
     ]
@@ -25,7 +24,6 @@ class LibVTKConan(ConanFile):
     license = "http://www.vtk.org/licensing/"
     description = "Visualization Toolkit by Kitware"
     source_subfolder = "source_subfolder"
-    build_subfolder = "build_subfolder"
     short_paths = True
 
     def configure(self):
@@ -108,12 +106,7 @@ class LibVTKConan(ConanFile):
                     tools.replace_in_file(os.path.join(path, name), 'slots:', 'Q_SLOTS:', strict=False)
 
     def build(self):
-        # Import common flags and defines
-        import common
-
         vtk_source_dir = os.path.join(self.source_folder, self.source_subfolder)
-        shutil.move("patches/CMakeProjectWrapper.txt", "CMakeLists.txt")
-
         tools.patch(vtk_source_dir, "patches/optimization.diff")
         tools.patch(vtk_source_dir, "patches/offscreen_size_windows.diff")
 
@@ -121,13 +114,18 @@ class LibVTKConan(ConanFile):
         # Ensure that VTK is compiling.
         self.replace_qt_keyword(os.path.join(vtk_source_dir))
 
-        cmake = CMake(self)
+        # Import common flags and defines
+        import common
 
-        # Export common flags
-        cmake.definitions["SIGHT_CMAKE_CXX_FLAGS"] = common.get_cxx_flags()
-        cmake.definitions["SIGHT_CMAKE_CXX_FLAGS_RELEASE"] = common.get_cxx_flags_release()
-        cmake.definitions["SIGHT_CMAKE_CXX_FLAGS_DEBUG"] = common.get_cxx_flags_debug()
-        cmake.definitions["SIGHT_CMAKE_CXX_FLAGS_RELWITHDEBINFO"] = common.get_cxx_flags_relwithdebinfo()
+        # Generate Cmake wrapper
+        common.generate_cmake_wrapper(
+            cmakelists_path='CMakeLists.txt',
+            source_subfolder=self.source_subfolder,
+            build_type=self.settings.build_type
+        )
+
+        cmake = CMake(self)
+        cmake.verbose = True
 
         cmake.definitions["BUILD_EXAMPLES"] = "OFF"
         cmake.definitions["BUILD_TESTING"] = "OFF"
@@ -179,7 +177,7 @@ class LibVTKConan(ConanFile):
         if not tools.os_info.is_windows:
             cmake.definitions["CMAKE_POSITION_INDEPENDENT_CODE"] = "ON"
 
-        cmake.configure(build_folder=self.build_subfolder)
+        cmake.configure()
         cmake.build()
         cmake.install()
 
