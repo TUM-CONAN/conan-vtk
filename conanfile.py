@@ -181,66 +181,16 @@ class LibVTKConan(ConanFile):
         cmake.build()
         cmake.install()
 
-    def cmake_fix_path(self, file_path, package_name):
-        try:
-            tools.replace_in_file(
-                file_path,
-                self.deps_cpp_info[package_name].rootpath.replace('\\', '/'),
-                "${CONAN_" + package_name.upper() + "_ROOT}",
-                strict=False
-            )
-        except BaseException:
-            self.output.info("Ignoring {0}...".format(package_name))
-
-    def cmake_fix_macos_sdk_path(self, file_path):
-        # Read in the file
-        with open(file_path, 'r') as file:
-            file_data = file.read()
-
-        if file_data:
-            # Replace the target string
-            pattern = (r';/Applications/Xcode\.app/Contents/Developer'
-                       r'/Platforms/MacOSX\.platform/Developer/SDKs/MacOSX\d\d\.\d\d\.sdk/usr/include')
-            # Match sdk path
-            file_data = re.sub(pattern, '', file_data, re.M)
-
-            # Write the file out again
-            with open(file_path, 'w') as file:
-                file.write(file_data)
-
     def package(self):
         # Patch all headers that contains Qt stuff to use Q_SIGNALS Q_SLOTS variant
         self.replace_qt_keyword(os.path.join(self.package_folder, 'include'))
 
-        for path, subdirs, names in os.walk(os.path.join(self.package_folder, 'lib', 'cmake')):
-            for name in names:
-                if fnmatch(name, '*.cmake'):
-                    cmake_file = os.path.join(path, name)
+        # Import common flags and defines
+        import common
 
-                    tools.replace_in_file(
-                        cmake_file,
-                        self.package_folder,
-                        '${CONAN_VTK_ROOT}',
-                        strict=False
-                    )
-
-                    tools.replace_in_file(
-                        cmake_file,
-                        os.path.join(self.build_folder, self.build_subfolder),
-                        '${CONAN_VTK_ROOT}',
-                        strict=False
-                    )
-
-                    self.cmake_fix_path(cmake_file, "glew")
-                    self.cmake_fix_path(cmake_file, "qt")
-                    self.cmake_fix_path(cmake_file, "freetype")
-                    self.cmake_fix_path(cmake_file, "libjpeg")
-                    self.cmake_fix_path(cmake_file, "libpng")
-                    self.cmake_fix_path(cmake_file, "libtiff")
-                    self.cmake_fix_path(cmake_file, "zlib")
-                    self.cmake_fix_path(cmake_file, "expat")
-                    self.cmake_fix_path(cmake_file, "libxml2")
-                    self.cmake_fix_macos_sdk_path(cmake_file)
+        # Fix all paths in *.cmake
+        build_folder = os.path.join(self.build_folder, self.build_subfolder)
+        common.fix_conan_path(self, self.package_folder, '*.cmake', build_folder)
 
     def package_info(self):
         self.cpp_info.libs = tools.collect_libs(self)
