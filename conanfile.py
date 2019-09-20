@@ -1,5 +1,4 @@
 import os
-import re
 
 from fnmatch import fnmatch
 from conans import ConanFile, CMake, tools
