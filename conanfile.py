@@ -1,6 +1,4 @@
 import os
-import shutil
-import re
 
 from fnmatch import fnmatch
 from conans import ConanFile, CMake, tools
@@ -9,7 +7,7 @@ from conans import ConanFile, CMake, tools
 class LibVTKConan(ConanFile):
     name = "vtk"
     upstream_version = "8.2.0"
-    package_revision = "-r2"
+    package_revision = "-r3"
     version = "{0}{1}".format(upstream_version, package_revision)
 
     generators = "cmake"
@@ -17,7 +15,6 @@ class LibVTKConan(ConanFile):
     options = {"shared": [True, False]}
     default_options = "shared=True"
     exports = [
-        "patches/CMakeProjectWrapper.txt",
         "patches/optimization.diff",
         "patches/offscreen_size_windows.diff"
     ]
@@ -29,25 +26,24 @@ class LibVTKConan(ConanFile):
     short_paths = True
 
     def configure(self):
-        del self.settings.compiler.libcxx
         if 'CI' not in os.environ:
             os.environ["CONAN_SYSREQUIRES_MODE"] = "verify"
 
     def requirements(self):
-        self.requires("common/1.0.0@sight/stable")
-        self.requires("qt/5.12.4@sight/stable")
+        self.requires("common/1.0.1@sight/stable")
+        self.requires("qt/5.12.4-r1@sight/stable")
 
         if tools.os_info.is_windows:
-            self.requires("libxml2/2.9.8-r2@sight/stable")
-            self.requires("expat/2.2.5-r2@sight/stable")
-            self.requires("zlib/1.2.11-r2@sight/stable")
+            self.requires("libxml2/2.9.8-r3@sight/stable")
+            self.requires("expat/2.2.5-r3@sight/stable")
+            self.requires("zlib/1.2.11-r3@sight/stable")
 
         if not tools.os_info.is_linux:
-            self.requires("glew/2.0.0-r2@sight/stable")
-            self.requires("libjpeg/9c-r2@sight/stable")
-            self.requires("freetype/2.9.1-r2@sight/stable")
-            self.requires("libpng/1.6.34-r2@sight/stable")
-            self.requires("libtiff/4.0.9-r2@sight/stable")
+            self.requires("glew/2.0.0-r3@sight/stable")
+            self.requires("libjpeg/9c-r3@sight/stable")
+            self.requires("freetype/2.9.1-r3@sight/stable")
+            self.requires("libpng/1.6.34-r3@sight/stable")
+            self.requires("libtiff/4.0.9-r3@sight/stable")
 
     def build_requirements(self):
         if tools.os_info.linux_distro == "linuxmint":
@@ -106,15 +102,10 @@ class LibVTKConan(ConanFile):
             for name in names:
                 if fnmatch(name, '*.h'):
                     tools.replace_in_file(os.path.join(path, name), 'signals:', 'Q_SIGNALS:', strict=False)
-                    tools.replace_in_file(os.path.join(path, name), 'slots:', 'Q_SLOTS:', strict=False)                   
+                    tools.replace_in_file(os.path.join(path, name), 'slots:', 'Q_SLOTS:', strict=False)
 
     def build(self):
-        # Import common flags and defines
-        import common
-
         vtk_source_dir = os.path.join(self.source_folder, self.source_subfolder)
-        shutil.move("patches/CMakeProjectWrapper.txt", "CMakeLists.txt")
-
         tools.patch(vtk_source_dir, "patches/optimization.diff")
         tools.patch(vtk_source_dir, "patches/offscreen_size_windows.diff")
 
@@ -122,12 +113,18 @@ class LibVTKConan(ConanFile):
         # Ensure that VTK is compiling.
         self.replace_qt_keyword(os.path.join(vtk_source_dir))
 
+        # Import common flags and defines
+        import common
+
+        # Generate Cmake wrapper
+        common.generate_cmake_wrapper(
+            cmakelists_path='CMakeLists.txt',
+            source_subfolder=self.source_subfolder,
+            build_type=self.settings.build_type
+        )
+
         cmake = CMake(self)
-        
-        # Set common flags
-        cmake.definitions["SIGHT_CMAKE_C_FLAGS"] = common.get_c_flags()
-        cmake.definitions["SIGHT_CMAKE_CXX_FLAGS"] = common.get_cxx_flags()
-        
+
         cmake.definitions["BUILD_EXAMPLES"] = "OFF"
         cmake.definitions["BUILD_TESTING"] = "OFF"
         cmake.definitions["BUILD_DOCUMENTATION"] = "OFF"
@@ -182,69 +179,16 @@ class LibVTKConan(ConanFile):
         cmake.build()
         cmake.install()
 
-    def cmake_fix_path(self, file_path, package_name):
-        try:
-            tools.replace_in_file(
-                file_path,
-                self.deps_cpp_info[package_name].rootpath.replace('\\', '/'),
-                "${CONAN_" + package_name.upper() + "_ROOT}",
-                strict=False
-            )
-        except:
-            self.output.info("Ignoring {0}...".format(package_name))
-
-    def cmake_fix_macos_sdk_path(self, file_path):
-        # Read in the file
-        with open(file_path, 'r') as file:
-            file_data = file.read()
-
-        if file_data:
-            # Replace the target string
-            file_data = re.sub(
-                # Match sdk path
-                r';/Applications/Xcode\.app/Contents/Developer/Platforms/MacOSX\.platform/Developer/SDKs/MacOSX\d\d\.\d\d\.sdk/usr/include',
-                '',
-                file_data,
-                re.M
-            )
-
-            # Write the file out again
-            with open(file_path, 'w') as file:
-                file.write(file_data)
-
     def package(self):
         # Patch all headers that contains Qt stuff to use Q_SIGNALS Q_SLOTS variant
         self.replace_qt_keyword(os.path.join(self.package_folder, 'include'))
 
-        for path, subdirs, names in os.walk(os.path.join(self.package_folder, 'lib', 'cmake')):
-            for name in names:
-                if fnmatch(name, '*.cmake'):
-                    cmake_file = os.path.join(path, name)
-                    
-                    tools.replace_in_file(
-                        cmake_file, 
-                        self.package_folder, 
-                        '${CONAN_VTK_ROOT}', 
-                        strict=False
-                    )
-                    
-                    tools.replace_in_file(
-                        cmake_file,
-                        os.path.join(self.build_folder, self.build_subfolder),
-                        '${CONAN_VTK_ROOT}',
-                        strict=False
-                    )
-                    
-                    self.cmake_fix_path(cmake_file, "glew")
-                    self.cmake_fix_path(cmake_file, "qt")
-                    self.cmake_fix_path(cmake_file, "freetype")
-                    self.cmake_fix_path(cmake_file, "libjpeg")
-                    self.cmake_fix_path(cmake_file, "libpng")
-                    self.cmake_fix_path(cmake_file, "libtiff")
-                    self.cmake_fix_path(cmake_file, "zlib")
-                    self.cmake_fix_path(cmake_file, "expat")
-                    self.cmake_fix_path(cmake_file, "libxml2")
-                    self.cmake_fix_macos_sdk_path(cmake_file)
+        # Import common flags and defines
+        import common
+
+        # Fix all paths in *.cmake
+        build_folder = os.path.join(self.build_folder, self.build_subfolder)
+        common.fix_conan_path(self, self.package_folder, '*.cmake', build_folder)
 
     def package_info(self):
         self.cpp_info.libs = tools.collect_libs(self)
