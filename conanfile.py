@@ -32,6 +32,8 @@ class LibVTKConan(ConanFile):
         del self.settings.compiler.libcxx
         # if 'CI' not in os.environ:
         #     os.environ["CONAN_SYSREQUIRES_MODE"] = "verify"
+        if tools.os_info.is_windows:
+            self.options['glew'].shared=True
 
     def requirements(self):
         self.requires("ircad_common/1.0.2@camposs/stable")
