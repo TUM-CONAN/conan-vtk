@@ -35,7 +35,7 @@ class LibVTKConan(ConanFile):
 
     def requirements(self):
         self.requires("ircad_common/1.0.0@camposs/stable")
-        self.requires("qt/5.12.2-r1@camposs/stable")
+        self.requires("qt/5.12.4-r2@camposs/stable")
 
         if tools.os_info.is_windows:
             self.requires("libxml2/2.9.8-r2@camposs/stable")
