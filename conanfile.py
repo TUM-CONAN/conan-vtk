@@ -35,8 +35,7 @@ class LibVTKConan(ConanFile):
 
     def requirements(self):
         self.requires("ircad_common/1.0.2@camposs/stable")
-        self.requires("qt/5.12.2-r1@ircad/testing")
-        # self.requires("qt/5.12.2@bincrafters/stable")
+        self.requires("qt/5.12.4-r2@camposs/stable")
 
         if tools.os_info.is_windows:
             self.requires("libxml2/2.9.8-r2@camposs/stable")
@@ -46,8 +45,8 @@ class LibVTKConan(ConanFile):
         if not tools.os_info.is_linux:
             self.requires("glew/2.1.0@camposs/stable")
             self.requires("libjpeg/9c-r2@camposs/stable")
-            self.requires("freetype/2.9.1@bincrafters/stable")
-            self.requires("libpng/1.6.36@bincrafters/stable")
+            self.requires("freetype/2.9.1-r4@camposs/stable")
+            self.requires("libpng/1.6.34-r4@camposs/stable")
             self.requires("libtiff/4.0.9@bincrafters/stable")
 
     def build_requirements(self):
