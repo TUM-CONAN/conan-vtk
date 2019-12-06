@@ -34,7 +34,7 @@ class LibVTKConan(ConanFile):
         #     os.environ["CONAN_SYSREQUIRES_MODE"] = "verify"
 
     def requirements(self):
-        self.requires("ircad_common/1.0.0@camposs/stable")
+        self.requires("ircad_common/1.0.2@camposs/stable")
         self.requires("qt/5.12.2-r1@ircad/testing")
         # self.requires("qt/5.12.2@bincrafters/stable")
 
