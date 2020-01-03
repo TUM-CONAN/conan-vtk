@@ -153,6 +153,9 @@ class LibVTKConan(ConanFile):
         # Patch all headers that contains Qt stuff to use Q_SIGNALS Q_SLOTS variant
         # Ensure that VTK is compiling.
         self.replace_qt_keyword(os.path.join(vtk_source_dir))
+        tools.replace_in_file(os.path.join(vtk_source_dir, "CMake", "FindGLEW.cmake"), 
+            """NAMES GLEW glew32""",
+            """NAMES GLEW glew32 glew32d""")
 
         # Import common flags and defines
         import common
