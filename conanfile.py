@@ -234,5 +234,7 @@ class LibVTKConan(ConanFile):
         build_folder = os.path.join(self.build_folder, self.build_subfolder)
         common.fix_conan_path(self, self.package_folder, '*.cmake', build_folder)
 
-    def package_info(self):
+    def package_info(self):        
         self.cpp_info.libs = tools.collect_libs(self)
+        v_major, v_minor, v_path = self.version.split(".")
+        self.cpp_info.includedirs = ['include', os.path.join('include', 'vtk-%s.%s' % (v_major, v_minor) )]
